@@ -24,8 +24,7 @@ defmodule LoveMatch do
     def sum_edge_pairs(counts) do
       middle = ceil(length(counts) / 2)
       {left, right} = Enum.split(counts, middle)
-      padded_right = if length(right) < middle, do: [0 | right], else: right
-      sum_pairs(left, Enum.reverse(padded_right))
+      sum_pairs(left, right |> zero_pad(middle) |> Enum.reverse())
     end
 
     defp sum_pairs(list_1, list_2) do
@@ -37,6 +36,9 @@ defmodule LoveMatch do
 
     defp digits(number) when number < 10, do: [number]
     defp digits(number), do: [div(number, 10), Integer.mod(number, 10)]
+
+    defp zero_pad(list, length) when length(list) < length, do: [0 | list]
+    defp zero_pad(list, _length), do: list
   end
 
   def calculate(name_1, name_2) do
