@@ -6,7 +6,7 @@ defmodule LoveMatch do
     """
 
     def count_letters(string) do
-      string |> String.graphemes() |> count_letters([])
+      string |> String.downcase() |> String.graphemes() |> count_letters([])
     end
 
     defp count_letters([], counts), do: Enum.reverse(counts)
@@ -18,9 +18,25 @@ defmodule LoveMatch do
       count_letters(remainder, [count | counts])
     end
 
-    def calculate_percentage(_counts) do
-      0
+    def calculate_percentage([a, b]), do: a * 10 + b
+    def calculate_percentage(counts), do: counts |> sum_edge_pairs() |> calculate_percentage()
+
+    def sum_edge_pairs(counts) do
+      middle = ceil(length(counts) / 2)
+      {left, right} = Enum.split(counts, middle)
+      padded_right = if length(right) < middle, do: [0 | right], else: right
+      sum_pairs(left, Enum.reverse(padded_right))
     end
+
+    defp sum_pairs(list_1, list_2) do
+      list_1
+      |> Enum.zip(list_2)
+      |> Enum.map(fn {a, b} -> a + b end)
+      |> Enum.flat_map(&digits/1)
+    end
+
+    defp digits(number) when number < 10, do: [number]
+    defp digits(number), do: [div(number, 10), Integer.mod(number, 10)]
   end
 
   def calculate(name_1, name_2) do
